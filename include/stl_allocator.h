@@ -1,4 +1,5 @@
 // stl-compatible allocator
+#pragma once
 
 template <typename T, typename Strategy>
 class STLAllocator

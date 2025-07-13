@@ -1,4 +1,5 @@
 // template allocator wrapper
+#pragma once
 
 template <typename Strategy>
 

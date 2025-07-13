@@ -1,4 +1,5 @@
 // type erased allocator
+#pragma once
 
 class IAllocator
 {
