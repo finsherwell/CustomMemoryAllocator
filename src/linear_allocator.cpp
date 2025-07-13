@@ -15,3 +15,7 @@ void LinearAllocator::allocate() {
 void LinearAllocator::free() {
 
 }
+
+void LinearAllocator::reset() {
+    
+}
