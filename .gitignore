@@ -1,5 +1,0 @@
-build/
-*.pyc
-.vscode
-CMakeUserPresets.json
-include/claude.h
