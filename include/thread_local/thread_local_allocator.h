@@ -28,7 +28,7 @@ public:
     }
 
     void deallocate() {
-        // No-op for linear allocator
+        // Linear allocator doesn't support individual deallocation
     }
 
     void reset() {
