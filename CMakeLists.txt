@@ -1,64 +1,50 @@
-# MIT License 
-# Copyright (c) 2018-Today Michele Adduci <michele@adduci.org>
-#
-# Main CMake Project file
+cmake_minimum_required(VERSION 3.14)
+project(CustomMemoryAllocators LANGUAGES CXX)
 
-#####################################
-# Define Project-Wide Settings
-#####################################
-cmake_minimum_required(VERSION 3.15.0 FATAL_ERROR)
-
-# Enables the Visibility Property on all target types
-cmake_policy(SET CMP0063 NEW)
-# Enables the MSVC_RUNTIME_LIBRARY property on targets
-cmake_policy(SET CMP0091 NEW)
-# Define the Project Name and Description
-project(moderncpp-project LANGUAGES CXX DESCRIPTION "moderncpp-project is a starter project for Modern C++")
-
-# Set Project version (used for library versioning and for CPack)
-set(CMAKE_PROJECT_VERSION_MAJOR 1)
-set(CMAKE_PROJECT_VERSION_MINOR 2)
-set(CMAKE_PROJECT_VERSION_PATCH 0)
-set(CMAKE_PROJECT_VERSION ${CMAKE_PROJECT_VERSION_MAJOR}.${CMAKE_PROJECT_VERSION_MINOR}.${CMAKE_PROJECT_VERSION_PATCH})
-
-# Set required C++ Standard
 set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
-# Generate the compile_commands.json file
-set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
-# Set the Relative Path Configurations
-set(CMAKE_SKIP_BUILD_RPATH FALSE)
-set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
-set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-# Configure the visibility of symbols in targets
-set(CMAKE_CXX_VISIBILITY_PRESET hidden)
-set(CMAKE_VISIBILITY_INLINES_HIDDEN 1)
-# Define installation folder and the module path (this one required by conan)
-set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/install)
-set(CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR} ${CMAKE_MODULE_PATH})
-set(CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR} ${CMAKE_PREFIX_PATH})
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-#####################################
-# Define Options
-#####################################
-option(BUILD_TESTING "Build tests" FALSE)
-option(BUILD_SHARED_LIBS "Build shared libraries" FALSE)
-option(BUILD_WITH_MT "Build libraries as MultiThreaded DLL (Windows Only)" FALSE)
+add_library(CustomMemoryAllocators INTERFACE)
 
-#####################################
-# Define CMake Module Imports
-#####################################
-include(GNUInstallDirs)
+target_include_directories(CustomMemoryAllocators INTERFACE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
+
+target_compile_features(CustomMemoryAllocators INTERFACE cxx_std_20)
+
+# Install headers (header-only)
+install(DIRECTORY include/ DESTINATION include)
+
+# Install the interface library target
+install(TARGETS CustomMemoryAllocators
+        EXPORT CustomMemoryAllocatorsTargets
+        INCLUDES DESTINATION include
+)
+
+# Export the target set for find_package
+install(EXPORT CustomMemoryAllocatorsTargets
+        FILE CustomMemoryAllocatorsTargets.cmake
+        NAMESPACE CustomMemoryAllocators::
+        DESTINATION lib/cmake/CustomMemoryAllocators
+)
+
 include(CMakePackageConfigHelpers)
-include(InstallRequiredSystemLibraries)
-include(GenerateExportHeader)
-include(${CMAKE_SOURCE_DIR}/cmake/clang_format.cmake)
-include(${CMAKE_SOURCE_DIR}/cmake/compiler_options.cmake)
-include(${CMAKE_SOURCE_DIR}/cmake/cpack.cmake)
-include(${CMAKE_SOURCE_DIR}/cmake/cppcheck.cmake)
-include(${CMAKE_SOURCE_DIR}/cmake/dependencies.cmake)
 
-#####################################
-# Define Targets
-#####################################
-add_subdirectory(project)
+write_basic_package_version_file(
+    "${CMAKE_CURRENT_BINARY_DIR}/CustomMemoryAllocatorsConfigVersion.cmake"
+    VERSION 1.0.0
+    COMPATIBILITY AnyNewerVersion
+)
+
+configure_package_config_file(
+    "${CMAKE_CURRENT_LIST_DIR}/cmake/CustomMemoryAllocatorsConfig.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/CustomMemoryAllocatorsConfig.cmake"
+    INSTALL_DESTINATION lib/cmake/CustomMemoryAllocators
+)
+
+install(FILES
+    "${CMAKE_CURRENT_BINARY_DIR}/CustomMemoryAllocatorsConfig.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/CustomMemoryAllocatorsConfigVersion.cmake"
+    DESTINATION lib/cmake/CustomMemoryAllocators
+)
